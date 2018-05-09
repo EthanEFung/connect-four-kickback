@@ -17,13 +17,12 @@ function Game() {
       and check winner
 */
 Game.prototype.playTurn = function (col) {
-  console.log(col, typeof col)
-  col = col.slice(0, 1);
-  col = parseInt(col);
   if (this.winner) return;
   if (this.matrix[col].length <= 6) {
     this.dropPiece(col);
-    this.winner = this.checkWinner(col);
+    if (this.winner = this.checkWinner(col)) {
+      declareWinner(this.isRed) 
+    }
     this.isRed = !this.isRed;
   }
 }
@@ -44,12 +43,11 @@ Game.prototype.checkWinner = function (col) {
 }
 
 Game.prototype.verticalWin = function (col) {
-  console.log(col)
   col = this.matrix[col];
 
   if (col.length < 4) return false;
 
-  for (let i = col.length - 2; i >= col.length - 5; i--) {
+  for (let i = col.length - 2; i >= 0; i--) {
     if (col[i] !== this.isRed) return false;
   }
 
@@ -90,6 +88,8 @@ Game.prototype.horizontalWin = function (col) {
 */
 Game.prototype.dropPiece = function (col) {
   this.matrix[col].push(this.isRed);
+  updateBoard(col);
+
 }
 
 Game.prototype.resetGame = function () { }
