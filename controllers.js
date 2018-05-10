@@ -6,9 +6,9 @@ function addColumnClickHandlers() {
   for (let $col of $columns) {
     $col.addEventListener('click', function (e) {
       e.preventDefault();
-      console.log('hello', e.target.id)
+      //console.log('hello', e.target.id)
       const id = e.target.id;
-      const col = id.split("_")[0];
+      const col = parseInt(id.split("_")[0], 10);
       game.playTurn(col);
       
     });
