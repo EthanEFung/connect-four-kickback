@@ -39,3 +39,22 @@
 .winner {
   text-align: center
 }
+
+.score-board {
+  width: 70vw;
+  height: 15vw;
+  margin: 10px auto;
+
+  display: flex;
+  flex-direction: column;
+
+}
+.yellow-col {
+  flex: 1;
+  background-color: yellow;
+}
+
+.red-col {
+  flex: 1;
+  background-color: red;
+}

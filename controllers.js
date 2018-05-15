@@ -15,3 +15,13 @@ function addColumnClickHandlers() {
   }
 }
 
+function addPlayAgainClickHandler() {
+  let $playAgain = document.getElementsByClassName('play-again');
+  $playAgain = $playAgain[0];
+  $playAgain.addEventListener('click', function(e){
+    e.preventDefault();
+    game.resetGame();
+    resetBoard();
+    removePlayAgain();
+  })
+}

@@ -8,7 +8,7 @@ function Game() {
   this.ySize = 6;
   this.matrix = this.populateMatrix(this.xSize);
   this.isRed = true;
-  this.winner = undefined;
+  this.isWinner = undefined;
 
 }
 
@@ -24,15 +24,15 @@ Game.prototype.populateMatrix = function (x) {
     if possible 
       runs dropPiece function
       change active turn
-      and check winner
+      and check isWinner
 */
 Game.prototype.playTurn = function (col) {
   console.log('type of col', typeof col)
   console.log('matrix', this.matrix);
-  if (this.winner) return;
+  if (this.isWinner) return;
   if (this.matrix[col].length <= 6) {
     this.dropPiece(col);
-    if (this.winner = this.checkWinner(col)) {
+    if (this.isWinner = this.checkWinner(col)) {
       declareWinner(this.isRed) 
     }
     this.isRed = !this.isRed;
@@ -50,7 +50,10 @@ Game.prototype.playTurn = function (col) {
   TODO
 */
 Game.prototype.checkWinner = function (col) {
-  if (this.verticalWin(col) || this.horizontalWin(col) || this.diagonalWin(col)) {
+  if (this.verticalWin(col) ||
+      this.horizontalWin(col) ||
+      this.diagonalWinLowerLeftToUpperRight(col) ||
+      this.diagonalWinUpperLeftToLowerRight(col) ) {
     return true;
   }
   return false;
@@ -93,7 +96,9 @@ Game.prototype.horizontalWin = function (col) {
 //input col index, output: true if win or false if lose
 // use helper arrayWin by passing it the diagonal array
 
-Game.prototype.diagonalWin = function (col) {
+
+
+Game.prototype.diagonalWinLowerLeftToUpperRight = function(col) {
   const idx = this.matrix[col].length - 1;
   let idx2 = idx;
   let col2 = col;
@@ -111,8 +116,26 @@ Game.prototype.diagonalWin = function (col) {
     checkArray.unshift(this.matrix[col2][idx2]);
   }
   return this.arrayWin(checkArray);
-  //start with buttom left to top right:
+}
 
+Game.prototype.diagonalWinUpperLeftToLowerRight = function(col) {
+  const idx = this.matrix[col].length - 1;
+  let idx2 = idx;
+  let col2 = col;
+  const checkArray = [];
+  while(idx2 >= 0 && col2 < this.xSize && this.matrix[col2][idx2] !== undefined) {
+    checkArray.push(this.matrix[col2][idx2]);
+    idx2--;
+    col2++;
+  }
+  idx2 = idx+1;
+  col2 = col+1;
+  while(idx2 < this.ySize && col2 >= 0 && this.matrix[col2][idx2] !== undefined) {
+    idx2++;
+    col2--;
+    checkArray.unshift(this.matrix[col2][idx2]);
+  }
+  return this.arrayWin(checkArray);
 }
 
 /*
@@ -124,6 +147,9 @@ Game.prototype.dropPiece = function (col) {
 
 }
 
-Game.prototype.resetGame = function () { }
+Game.prototype.resetGame = function () {
+  this.matrix = this.populateMatrix(this.xSize);
+  this.isWinner = undefined; 
+}
 
 
