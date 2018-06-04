@@ -4,26 +4,37 @@
   create an object that represents the game instance
 */
 function Game() {
-  this.matrix = [[], [], [], [], [], [], []];
+  this.xSize = 7;
+  this.ySize = 6;
+  this.matrix = this.populateMatrix(this.xSize);
   this.isRed = true;
-  this.winner = undefined;
+  this.isWinner = undefined;
+
 }
 
+Game.prototype.populateMatrix = function (x) {
+  const matrix = []
+  for (let i = 0; i < x; i++) {
+    matrix.push([]);
+  }
+  return matrix;
+}
 /*
   would check if its possible to drop a piece in a col
     if possible 
       runs dropPiece function
       change active turn
-      and check winner
+      and check isWinner
 */
 Game.prototype.playTurn = function (col) {
-  console.log(col, typeof col)
-  col = col.slice(0, 1);
-  col = parseInt(col);
-  if (this.winner) return;
+  console.log('type of col', typeof col)
+  console.log('matrix', this.matrix);
+  if (this.isWinner) return;
   if (this.matrix[col].length <= 6) {
     this.dropPiece(col);
-    this.winner = this.checkWinner(col);
+    if (this.isWinner = this.checkWinner(col)) {
+      declareWinner(this.isRed) 
+    }
     this.isRed = !this.isRed;
   }
 }
@@ -39,43 +50,23 @@ Game.prototype.playTurn = function (col) {
   TODO
 */
 Game.prototype.checkWinner = function (col) {
-  if (this.verticalWin(col) || this.horizontalWin(col)) return true;
+  if (this.verticalWin(col) ||
+      this.horizontalWin(col) ||
+      this.diagonalWinLowerLeftToUpperRight(col) ||
+      this.diagonalWinUpperLeftToLowerRight(col) ) {
+    return true;
+  }
   return false;
 }
 
-Game.prototype.verticalWin = function (col) {
-  console.log(col)
-  col = this.matrix[col];
-
-  if (col.length < 4) return false;
-
-  for (let i = col.length - 2; i >= col.length - 5; i--) {
-    if (col[i] !== this.isRed) return false;
-  }
-
-  return true;
-}
-
-/*
-  check the length of the col
-    get the index of the last item
-
-  have a count of how many in a row init at zero  
-  loop the matrix
-    check at the index we saved
-    if the piece at the index matches isRed increment counter
-      if the count is at four return true
-    else reset counter 
-  
-*/
-Game.prototype.horizontalWin = function (col) {
-  const idx = this.matrix[col].length - 1;
-
+Game.prototype.arrayWin = function(array) {
   let count = 0;
-  for (let i = 0; i < this.matrix.length; i++) {
-    if (this.matrix[i][idx] === this.isRed) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === this.isRed) {
       count++;
-      if (count === 4) return true;
+      if (count === 4) {
+        return true
+      }
     } else {
       count = 0;
     }
@@ -84,14 +75,81 @@ Game.prototype.horizontalWin = function (col) {
 }
 
 
+Game.prototype.verticalWin = function (col) {
+  col = this.matrix[col];
+  if (col.length < 4) return false;
+  const checkArray = col.slice(0, col.length -2)
+  return this.arrayWin(col);
+}
+
+
+Game.prototype.horizontalWin = function (col) {
+  const idx = this.matrix[col].length - 1;
+  const checkArray = [];
+  for (let i = 0; i < this.matrix.length; i++) {
+    checkArray.push(this.matrix[i][idx]);
+  }
+  console.log('checkArray', checkArray);
+  return this.arrayWin(checkArray);
+}
+
+//input col index, output: true if win or false if lose
+// use helper arrayWin by passing it the diagonal array
+
+
+
+Game.prototype.diagonalWinLowerLeftToUpperRight = function(col) {
+  const idx = this.matrix[col].length - 1;
+  let idx2 = idx;
+  let col2 = col;
+  const checkArray = [];
+  while(idx2 >= 0 && col2 >= 0 && this.matrix[col2][idx2] !== undefined) {
+    checkArray.push(this.matrix[col2][idx2]);
+    idx2--;
+    col2--;
+  }
+  idx2 = idx+1;
+  col2 = col+1;
+  while(idx2 < this.ySize && col2 < this.xSize && this.matrix[col2][idx2] !== undefined) {
+    idx2++;
+    col2++;
+    checkArray.unshift(this.matrix[col2][idx2]);
+  }
+  return this.arrayWin(checkArray);
+}
+
+Game.prototype.diagonalWinUpperLeftToLowerRight = function(col) {
+  const idx = this.matrix[col].length - 1;
+  let idx2 = idx;
+  let col2 = col;
+  const checkArray = [];
+  while(idx2 >= 0 && col2 < this.xSize && this.matrix[col2][idx2] !== undefined) {
+    checkArray.push(this.matrix[col2][idx2]);
+    idx2--;
+    col2++;
+  }
+  idx2 = idx+1;
+  col2 = col+1;
+  while(idx2 < this.ySize && col2 >= 0 && this.matrix[col2][idx2] !== undefined) {
+    idx2++;
+    col2--;
+    checkArray.unshift(this.matrix[col2][idx2]);
+  }
+  return this.arrayWin(checkArray);
+}
 
 /*
   checks to see if the piece isRed
 */
 Game.prototype.dropPiece = function (col) {
   this.matrix[col].push(this.isRed);
+  updateBoard(col);
+
 }
 
-Game.prototype.resetGame = function () { }
+Game.prototype.resetGame = function () {
+  this.matrix = this.populateMatrix(this.xSize);
+  this.isWinner = undefined; 
+}
 
 
